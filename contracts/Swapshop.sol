@@ -12,25 +12,31 @@ mapping(bytes32=> NFT) public nftNameToNFT;
 
 mapping(bytes32=>bytes32)public exchangeNftToNFT;
 
+//store various information about the NFT
 struct NFT{
     bytes32 NFTName;
     uint tokenId;
     address ownerAddress;
 }
 
-function defineNFTToTrade(bytes32 calldata _NFTName, bytes32 calldata _NFTToExchange)public{
-require(msg.sender ==ownerOf(nftNameToNFT[_NFTName].ownerAddress), "Not the owner");
-//define NFT you want to trade for
-exchangeNFTToNFT[_NFTName] = _NFTToExchange;
+constructor(){
+
 }
+
 //limit order
 function depositNFT(bytes32 calldata _NFTName, bytes32 calldata _NFTToExchange, uint256 _tokenId)public payable{
     require(msg.value>=MINIMUM_EXCHANGE_FEE, 'Inadequate funds');
     require(msg.sender == ownerOf(_tokenId), "Not NFT owner");
 safeTransferFrom(msg.sender, address(this),tokenId);
-struct memory nftToTrade = NFT(_NFTName, _tokenId, msg.sender);
+struct storage nftToTrade = NFT(_NFTName, _tokenId, msg.sender);
 // ownersToNFTs[msg.sender] = nftToTrade;
 nftNameToNFT[_NFTName] = nftToTrade;
+}
+
+function defineNFTToTrade(bytes32 calldata _NFTName, bytes32 calldata _NFTToExchange)public{
+require(msg.sender ==ownerOf(nftNameToNFT[_NFTName].ownerAddress), "Not the owner");
+//define NFT you want to trade for
+exchangeNFTToNFT[_NFTName] = _NFTToExchange;
 }
 
 function changeNFTToExchange(bytes calldata _NFTName,bytes calldata _newNFTName)public{
